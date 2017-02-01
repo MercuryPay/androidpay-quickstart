@@ -19,6 +19,7 @@ package com.google.android.gms.samples.wallet;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -29,6 +30,8 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.goebl.david.Response;
+import com.goebl.david.Webb;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
@@ -39,6 +42,16 @@ import com.google.android.gms.wallet.PaymentMethodToken;
 import com.google.android.gms.wallet.Wallet;
 import com.google.android.gms.wallet.WalletConstants;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
 /**
  * This is a fragment that handles the creating and sending of a {@link FullWalletRequest} using
  * {@link Wallet#loadFullWallet(GoogleApiClient, FullWalletRequest, int)}. This fragment renders
@@ -47,7 +60,7 @@ import com.google.android.gms.wallet.WalletConstants;
  * a drop in replacement of a confirmation button in case the user has chosen to use Google Wallet.
  */
 public class FullWalletConfirmationButtonFragment extends Fragment implements
-        OnConnectionFailedListener, OnClickListener {
+        OnConnectionFailedListener, OnClickListener, AsyncResponse {
 
     private static final String TAG = "FullWallet";
 
@@ -236,7 +249,7 @@ public class FullWalletConfirmationButtonFragment extends Fragment implements
         }
 
         // Log payment method token, if it exists. This token will either be a direct integration
-        // token or a Stripe token, depending on the method used when making the MaskedWalletRequest
+        // token or a Vantiv/Stripe token, depending on the method used when making the MaskedWalletRequest
         PaymentMethodToken token = fullWallet.getPaymentMethodToken();
         if (token != null) {
             // getToken returns a JSON object as a String.
@@ -259,15 +272,91 @@ public class FullWalletConfirmationButtonFragment extends Fragment implements
         //       to your server and get back success or failure. If you used Stripe for processing,
         //       you can get the token from fullWallet.getPaymentMethodToken()
 
-        Intent intent = new Intent(getActivity(), OrderCompleteActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.putExtra(Constants.EXTRA_FULL_WALLET, fullWallet);
-        startActivity(intent);
+        VantivIPTxnTask task = new VantivIPTxnTask(fullWallet);
+        task.delegate = this;
+        task.execute(getString(R.string.vantiv_ipurl), getString(R.string.vantiv_ipauth), token.getToken());
     }
 
     protected void initializeProgressDialog() {
         mProgressDialog = new ProgressDialog(getActivity());
         mProgressDialog.setMessage(getString(R.string.loading));
         mProgressDialog.setIndeterminate(true);
+    }
+
+    @Override
+    public void processFinish(JSONObject output, FullWallet fullWallet) {
+        Log.d(TAG, "Txn Response: " + output.toString());
+
+        Intent intent = new Intent(getActivity(), OrderCompleteActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.putExtra(Constants.EXTRA_FULL_WALLET, fullWallet);
+        startActivity(intent);
+    }
+}
+
+interface AsyncResponse {
+    void processFinish(JSONObject output, FullWallet fullWallet);
+}
+
+class VantivIPTxnTask extends AsyncTask<String, Void, JSONObject> {
+
+    private Exception exception;
+    private Webb mWebb = Webb.create();
+    public AsyncResponse delegate = null;
+    private FullWallet fullWallet;
+    private String ipAuth;
+
+    public VantivIPTxnTask(FullWallet fullWallet) {
+        this.fullWallet = fullWallet;
+    }
+
+    protected JSONObject doInBackground(String... data) {
+        try {
+            return makeVantivIPRequest(data[0], data[1], data[2]);
+        } catch (Exception e) {
+            this.exception = e;
+            return null;
+        }
+    }
+
+    protected void onPostExecute(JSONObject result) {
+        // TODO: check this.exception
+        if(this.exception != null){
+
+            return;
+        }
+        // TODO: do something with the feed
+        delegate.processFinish(result, this.fullWallet);
+    }
+
+    private JSONObject makeVantivIPRequest(String url, String ipAuth, String registrationId) {
+
+        mWebb.setBaseUri(url);
+        //mWebb.setDefaultHeader(Webb.HDR_USER_AGENT, null);
+        JSONObject body = new JSONObject();
+        try {
+            body.put("OperatorID", "TEST");
+            body.put("InvoiceNo", "123456");
+            body.put("Purchase", "2.20");
+            body.put("Tax", "0.00");
+            body.put("TokenType", "RegistrationId");
+            body.put("RecordNo", registrationId);
+            body.put("Frequency", "OneTime");
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        Response<JSONObject> response = mWebb.post("/PaymentsAPI/Credit/SaleByRecordNo")
+                .header("Content-Type", "application/json")
+                .header("Accept", "*/*")
+                .header("Authorization", "Basic " + ipAuth)
+                .body(body)
+                .ensureSuccess()
+                .asJsonObject();
+
+        JSONObject apiResult = response.getBody();
+
+        return apiResult;
     }
 }

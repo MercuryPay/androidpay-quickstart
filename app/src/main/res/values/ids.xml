@@ -4,4 +4,8 @@
 
     <string name="stripe_publishable_key">REPLACE_ME</string>
     <string name="stripe_version">REPLACE_ME</string>
+
+    <string name="vantiv_paypageid">REPLACE_ME</string>
+    <string name="vantiv_ipurl">https://w1.mercurycert.net</string>
+    <string name="vantiv_ipauth">REPLACE_ME</string>
 </resources>

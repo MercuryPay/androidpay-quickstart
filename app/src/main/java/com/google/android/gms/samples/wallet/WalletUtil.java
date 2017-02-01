@@ -95,6 +95,38 @@ public class WalletUtil {
       return createMaskedWalletRequest(itemInfo, parameters);
     }
 
+    /**
+     * Creates a MaskedWalletRequest for processing payments with Stripe
+     *
+     * @param itemInfo {@link com.google.android.gms.samples.wallet.ItemInfo} containing details
+     *                 of an item.
+     * @param payPageId Vantiv PayPageId.
+     * @return {@link MaskedWalletRequest} instance
+     */
+    public static MaskedWalletRequest createVantivMaskedWalletRequest(ItemInfo itemInfo,
+                                                                      String payPageId,
+                                                                      String orderId,
+                                                                      String id,
+                                                                      String reportGroup) {
+        // Validate Vantiv configuration
+        if ("REPLACE_ME".equals(payPageId)) {
+            throw new IllegalArgumentException("Invalid Vantiv configuration, see README for instructions.");
+        }
+
+        // [START vantiv_integration_parameters]
+        PaymentMethodTokenizationParameters parameters = PaymentMethodTokenizationParameters.newBuilder()
+                .setPaymentMethodTokenizationType(PaymentMethodTokenizationType.PAYMENT_GATEWAY)
+                .addParameter("gateway", "vantiv")
+                .addParameter("vantiv:merchantPayPageId", payPageId)
+                .addParameter("vantiv:merchantOrderId", orderId)
+                .addParameter("vantiv:merchantTransactionId", id)
+                .addParameter("vantiv:merchantReportGroup", reportGroup)
+                .build();
+        // [END vantiv_integration_parameters]
+
+        return createMaskedWalletRequest(itemInfo, parameters);
+    }
+
     private static MaskedWalletRequest createMaskedWalletRequest(ItemInfo itemInfo,
             PaymentMethodTokenizationParameters parameters) {
         // Build a List of all line items

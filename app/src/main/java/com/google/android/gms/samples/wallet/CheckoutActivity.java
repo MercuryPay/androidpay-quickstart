@@ -64,7 +64,9 @@ public class CheckoutActivity extends BikestoreFragmentActivity implements
     private Button mReturnToShopping;
     private Button mContinueCheckout;
     private CheckBox mStripeCheckbox;
+    private CheckBox mVantivCheckbox;
     private boolean mUseStripe = false;
+    private boolean mUseVantiv = false;
     private GoogleApiClient mGoogleApiClient;
     private ProgressDialog mProgressDialog;
 
@@ -90,6 +92,9 @@ public class CheckoutActivity extends BikestoreFragmentActivity implements
 
         mStripeCheckbox = (CheckBox) findViewById(R.id.checkbox_stripe);
         mStripeCheckbox.setOnCheckedChangeListener(this);
+
+        mVantivCheckbox = (CheckBox) findViewById(R.id.checkbox_vantiv);
+        mVantivCheckbox.setOnCheckedChangeListener(this);
 
         // Check if user is ready to use Android Pay
         // [START is_ready_to_pay]
@@ -206,6 +211,12 @@ public class CheckoutActivity extends BikestoreFragmentActivity implements
             // Re-create the buy-button with the proper processor
             createAndAddWalletFragment();
         }
+        if(buttonView.getId() == R.id.checkbox_vantiv) {
+            mUseVantiv = isChecked;
+
+            // Re-create the buy-button with the proper processor
+            createAndAddWalletFragment();
+        }
     }
 
     private void createAndAddWalletFragment() {
@@ -233,6 +244,15 @@ public class CheckoutActivity extends BikestoreFragmentActivity implements
                     Constants.ITEMS_FOR_SALE[mItemId],
                     getString(R.string.stripe_publishable_key),
                     getString(R.string.stripe_version));
+        }
+        else if (mUseVantiv) {
+            // Vantiv integration
+            maskedWalletRequest = WalletUtil.createVantivMaskedWalletRequest(
+                    Constants.ITEMS_FOR_SALE[mItemId],
+                    getString(R.string.vantiv_paypageid),
+                    "orderId",
+                    "tranId",
+                    "reportGroup");
         } else {
             // Direct integration
             maskedWalletRequest = WalletUtil.createMaskedWalletRequest(

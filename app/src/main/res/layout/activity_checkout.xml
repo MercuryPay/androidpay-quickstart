@@ -33,6 +33,25 @@
 
         <include layout="@layout/horizontal_divider" />
 
+        <TextView
+            android:id="@+id/android_pay_message"
+            android:layout_width="@dimen/buy_button_width"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="10dp"
+            android:gravity="center"
+            android:text="@string/want_to_use_android_pay"
+            android:visibility="gone"/>
+
+        <Button
+            android:id="@+id/button_regular_checkout"
+            android:layout_width="@dimen/buy_button_width"
+            android:layout_height="wrap_content"
+            android:text="@string/continue_checkout"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="@dimen/padding_large"
+            android:visibility="gone" />
+
         <LinearLayout
             android:id="@+id/layout_android_pay_checkout"
             android:layout_width="match_parent"
@@ -59,26 +78,16 @@
                 android:checked="false"
                 android:text="@string/stripe_checkbox_text" />
 
+            <CheckBox
+                android:id="@+id/checkbox_vantiv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="@dimen/margin_xlarge"
+                android:checked="false"
+                android:text="@string/vantiv_checkbox_text" />
+
         </LinearLayout>
-
-        <TextView
-            android:id="@+id/android_pay_message"
-            android:layout_width="@dimen/buy_button_width"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="10dp"
-            android:gravity="center"
-            android:text="@string/want_to_use_android_pay"
-            android:visibility="gone"/>
-
-        <Button
-            android:id="@+id/button_regular_checkout"
-            android:layout_width="@dimen/buy_button_width"
-            android:layout_height="wrap_content"
-            android:text="@string/continue_checkout"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="@dimen/padding_large"
-            android:visibility="gone" />
 
         <Button
             android:id="@+id/button_return_to_shopping"
