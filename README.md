@@ -12,6 +12,33 @@ Run the Android SDK Manager (`android sdk`) and ensure that you have the followi
   * Google Play services version 25
   * Android Support Library version 22.2
   * Android Support Repository version 15
+  
+## Setting up Vantiv IP Integration
+In order to run this sample with the processor gateway model you will need to acquire a Cert eProtect PaypageID
+and a Cert Integrated Payments Merchant Identifier. Please contact Vantiv to be set up 
+(call 866-622-2880 or [Live Chat](https://chat.vantiv.com/Sales/i3Root/chat-session.htm)).
+
+Place these values in `androidpay-quickstart/app/src/main/res/values/ids.xml` for the `vantiv_paypageid` and 
+`vantiv_ipauth` ids.
+
+The `vantiv_ipauth` id value must be a base64 encoded string from the Merchant Identifer and web services password
+in the form 
+```
+<merchantidentifer><=optionalnickname>:<webservicespassword>
+```
+For example: 
+```
+12345:password
+```
+should be base64 encoded to
+```
+MTIzNDU6cGFzc3dvcmQ=
+```
+and placed in the `vantiv_ipauth` id.
+
+## Running the sample with Vantiv IP Integration
+This sample must be run on an Android device with the AndroidPay app and loaded with an AndroidPay supported
+credit card. During checkout be sure to check the "Use Vantiv as payment processor" checkbox.
 
 ## Generating a Public/Private Key Pair
 In order to run this sample with the 'direct integration' model (as opposed to a processor gateway token) 
@@ -38,7 +65,7 @@ ASN1 OID: prime256v1
 ...
 ```
 
-Taking the value of the the `pub` key and as $PUBLICKEY, run the following:
+Taking the value of the `pub` key and as $PUBLICKEY, run the following:
 
 ```
 echo $PUBLICKEY | xxd -r -p | base64
