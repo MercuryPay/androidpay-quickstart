@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.google.android.gms.samples.wallet;
+package com.vantiv.android.gms.samples.wallet;
 
 import com.google.android.gms.wallet.WalletConstants;
 
@@ -24,7 +24,8 @@ import com.google.android.gms.wallet.WalletConstants;
 public class Constants {
 
     // Environment to use when creating an instance of Wallet.WalletOptions
-    public static final int WALLET_ENVIRONMENT = WalletConstants.ENVIRONMENT_TEST;
+    //public static final int WALLET_ENVIRONMENT = WalletConstants.ENVIRONMENT_TEST;
+    public static final int WALLET_ENVIRONMENT = WalletConstants.ENVIRONMENT_PRODUCTION;
 
     public static final String MERCHANT_NAME = "Awesome Bike Store";
 

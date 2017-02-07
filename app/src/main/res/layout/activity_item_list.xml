@@ -22,7 +22,7 @@
 
     <fragment
         android:id="@+id/promo_fragment"
-        android:name="com.google.android.gms.samples.wallet.PromoAddressLookupFragment"
+        android:name="com.vantiv.android.gms.samples.wallet.PromoAddressLookupFragment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
@@ -30,7 +30,7 @@
 
     <fragment
         android:id="@+id/item_list"
-        android:name="com.google.android.gms.samples.wallet.ItemListFragment"
+        android:name="com.vantiv.android.gms.samples.wallet.ItemListFragment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 

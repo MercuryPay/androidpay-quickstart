@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.google.android.gms.samples.wallet;
+package com.vantiv.android.gms.samples.wallet;
 
 import com.google.android.gms.wallet.Cart;
 import com.google.android.gms.wallet.FullWalletRequest;
@@ -42,7 +42,7 @@ public class WalletUtil {
     /**
      * Creates a MaskedWalletRequest for direct merchant integration (no payment processor)
      *
-     * @param itemInfo {@link com.google.android.gms.samples.wallet.ItemInfo} containing details
+     * @param itemInfo {@link com.vantiv.android.gms.samples.wallet.ItemInfo} containing details
      *                 of an item.
      * @param publicKey base64-encoded public encryption key. See instructions for more details.
      * @return {@link MaskedWalletRequest} instance
@@ -69,7 +69,7 @@ public class WalletUtil {
     /**
      * Creates a MaskedWalletRequest for processing payments with Stripe
      *
-     * @param itemInfo {@link com.google.android.gms.samples.wallet.ItemInfo} containing details
+     * @param itemInfo {@link com.vantiv.android.gms.samples.wallet.ItemInfo} containing details
      *                 of an item.
      * @param publishableKey Stripe publishable key.
      * @param version Stripe API version.
@@ -98,7 +98,7 @@ public class WalletUtil {
     /**
      * Creates a MaskedWalletRequest for processing payments with Stripe
      *
-     * @param itemInfo {@link com.google.android.gms.samples.wallet.ItemInfo} containing details
+     * @param itemInfo {@link com.vantiv.android.gms.samples.wallet.ItemInfo} containing details
      *                 of an item.
      * @param payPageId Vantiv PayPageId.
      * @return {@link MaskedWalletRequest} instance
@@ -161,7 +161,7 @@ public class WalletUtil {
      * whether to use estimated values of tax and shipping for setting up the
      * {@link MaskedWalletRequest} or actual values in the case of a {@link FullWalletRequest}
      *
-     * @param itemInfo {@link com.google.android.gms.samples.wallet.ItemInfo} used for building the
+     * @param itemInfo {@link com.vantiv.android.gms.samples.wallet.ItemInfo} used for building the
      *                 {@link com.google.android.gms.wallet.LineItem} list.
      * @param isEstimate {@code boolean} that indicates whether to use estimated values for
      *                   shipping and tax values.
@@ -226,7 +226,7 @@ public class WalletUtil {
 
     /**
      *
-     * @param itemInfo {@link com.google.android.gms.samples.wallet.ItemInfo} to use for creating
+     * @param itemInfo {@link com.vantiv.android.gms.samples.wallet.ItemInfo} to use for creating
      *                 the {@link com.google.android.gms.wallet.FullWalletRequest}
      * @param googleTransactionId
      * @return {@link FullWalletRequest} instance

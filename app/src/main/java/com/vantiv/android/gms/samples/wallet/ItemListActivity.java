@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.google.android.gms.samples.wallet;
+package com.vantiv.android.gms.samples.wallet;
 
 import android.content.Intent;
 import android.os.Bundle;

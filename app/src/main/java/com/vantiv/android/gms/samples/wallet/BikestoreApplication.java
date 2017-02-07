@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package com.google.android.gms.samples.wallet;
+package com.vantiv.android.gms.samples.wallet;
 
 import android.app.Application;
 import android.content.SharedPreferences;
 
 public class BikestoreApplication extends Application {
 
-    private static final String USER_PREFS = "com.google.android.gms.samples.wallet.USER_PREFS";
-    private static final String KEY_USERNAME = "com.google.android.gms.samples.wallet.KEY_USERNAME";
+    private static final String USER_PREFS = "com.vantiv.android.gms.samples.wallet.USER_PREFS";
+    private static final String KEY_USERNAME = "com.vantiv.android.gms.samples.wallet.KEY_USERNAME";
     private String mUserName;
 
     // Not being saved in shared preferences to let users try new addresses

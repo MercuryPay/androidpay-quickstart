@@ -17,6 +17,6 @@
 
 <fragment xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/item_details"
-    android:name="com.google.android.gms.samples.wallet.ItemDetailsFragment"
+    android:name="com.vantiv.android.gms.samples.wallet.ItemDetailsFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent" />

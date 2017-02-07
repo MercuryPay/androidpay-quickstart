@@ -14,7 +14,7 @@
      limitations under the License.
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.google.android.gms.samples.wallet"
+    package="com.vantiv.android.gms.samples.wallet"
     android:versionCode="1"
     android:versionName="1.0" >
 
