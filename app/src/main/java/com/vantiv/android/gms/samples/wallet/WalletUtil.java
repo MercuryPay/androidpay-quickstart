@@ -20,7 +20,6 @@ import com.google.android.gms.wallet.Cart;
 import com.google.android.gms.wallet.FullWalletRequest;
 import com.google.android.gms.wallet.LineItem;
 import com.google.android.gms.wallet.MaskedWalletRequest;
-import com.google.android.gms.wallet.NotifyTransactionStatusRequest;
 import com.google.android.gms.wallet.PaymentMethodTokenizationParameters;
 import com.google.android.gms.wallet.PaymentMethodTokenizationType;
 
@@ -250,22 +249,6 @@ public class WalletUtil {
         // [END full_wallet_request]
 
         return request;
-    }
-
-    /**
-     * @param googleTransactionId
-     * @param status from {@link NotifyTransactionStatusRequest.Status} which could either be
-     *               {@code NotifyTransactionStatusRequest.Status.SUCCESS} or one of the error codes
-     *               from {@link NotifyTransactionStatusRequest.Status.Error}
-     * @return {@link NotifyTransactionStatusRequest} instance
-     */
-    @SuppressWarnings("javadoc")
-    public static NotifyTransactionStatusRequest createNotifyTransactionStatusRequest(
-            String googleTransactionId, int status) {
-        return NotifyTransactionStatusRequest.newBuilder()
-                .setGoogleTransactionId(googleTransactionId)
-                .setStatus(status)
-                .build();
     }
 
     /**

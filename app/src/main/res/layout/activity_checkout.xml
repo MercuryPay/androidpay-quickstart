@@ -69,6 +69,14 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="@dimen/margin_xlarge" />
 
+            <Button
+                android:id="@+id/button_pay_with_google"
+                android:layout_width="@dimen/buy_button_width"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/padding_large"
+                android:text="@string/pay_with_google" />
+
             <CheckBox
                 android:id="@+id/checkbox_stripe"
                 android:layout_width="wrap_content"

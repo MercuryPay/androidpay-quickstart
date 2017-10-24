@@ -29,6 +29,7 @@
     <string name="add_to_cart">Add to cart</string>
     <string name="continue_checkout">Continue checkout</string>
     <string name="return_to_shopping">Return to shopping</string>
+    <string name="pay_with_google">Pay with Google</string>
     <string name="not_implemented">Not implemented</string>
     <string name="loading">Loading&#8230;</string>
     <string name="estimated_shipping">Estimated shipping:</string>

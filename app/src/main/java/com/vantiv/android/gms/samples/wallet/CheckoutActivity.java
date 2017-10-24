@@ -30,11 +30,23 @@ import android.widget.CompoundButton;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.BooleanResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.wallet.AutoResolveHelper;
+import com.google.android.gms.wallet.CardRequirements;
+import com.google.android.gms.wallet.IsReadyToPayRequest;
+import com.google.android.gms.wallet.PaymentData;
+import com.google.android.gms.wallet.PaymentDataRequest;
+import com.google.android.gms.wallet.PaymentMethodTokenizationParameters;
+import com.google.android.gms.wallet.PaymentsClient;
 import com.google.android.gms.wallet.MaskedWallet;
 import com.google.android.gms.wallet.MaskedWalletRequest;
+import com.google.android.gms.wallet.TransactionInfo;
 import com.google.android.gms.wallet.Wallet;
 import com.google.android.gms.wallet.WalletConstants;
 import com.google.android.gms.wallet.fragment.SupportWalletFragment;
@@ -42,6 +54,8 @@ import com.google.android.gms.wallet.fragment.WalletFragmentInitParams;
 import com.google.android.gms.wallet.fragment.WalletFragmentMode;
 import com.google.android.gms.wallet.fragment.WalletFragmentOptions;
 import com.google.android.gms.wallet.fragment.WalletFragmentStyle;
+
+import java.util.Arrays;
 
 /**
  * The checkout page.
@@ -68,7 +82,10 @@ public class CheckoutActivity extends BikestoreFragmentActivity implements
     private boolean mUseStripe = false;
     private boolean mUseVantiv = false;
     private GoogleApiClient mGoogleApiClient;
+    private PaymentsClient mPaymentsClient;
     private ProgressDialog mProgressDialog;
+    private static final int LOAD_PAYMENT_DATA_REQUEST_CODE = 1313;
+    private final Activity activity = (Activity) this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,6 +100,15 @@ public class CheckoutActivity extends BikestoreFragmentActivity implements
                 .enableAutoManage(this, this)
                 .build();
         // [END basic_google_api_client]
+
+        mPaymentsClient =
+                Wallet.getPaymentsClient(
+                        this,
+                        new Wallet.WalletOptions.Builder()
+                                .setEnvironment(WalletConstants.ENVIRONMENT_TEST)
+                                .build());
+
+        isReadyToPay();
 
         mItemId = getIntent().getIntExtra(Constants.EXTRA_ITEM_ID, 0);
         mReturnToShopping = (Button) findViewById(R.id.button_return_to_shopping);
@@ -134,6 +160,75 @@ public class CheckoutActivity extends BikestoreFragmentActivity implements
                     }
                 });
         // [END is_ready_to_pay]
+
+        try {
+            findViewById(R.id.button_pay_with_google)
+                    .setOnClickListener(this);
+        }
+        catch (Exception e) {
+            // This will catch any exception, because they are all descended from Exception
+            System.out.println("Error " + e.getMessage());
+        }
+    }
+
+    private void isReadyToPay() {
+        IsReadyToPayRequest request =
+                IsReadyToPayRequest.newBuilder()
+                        .addAllowedPaymentMethod(WalletConstants.PAYMENT_METHOD_CARD)
+                        .addAllowedPaymentMethod(WalletConstants.PAYMENT_METHOD_TOKENIZED_CARD)
+                        .build();
+        Task<Boolean> task = mPaymentsClient.isReadyToPay(request);
+        task.addOnCompleteListener(
+                new OnCompleteListener<Boolean>() {
+                    public void onComplete(Task<Boolean> task) {
+                        try {
+                            boolean result = task.getResult(ApiException.class);
+                            if (result == true) {
+                                // Show Google as payment option.
+                            } else {
+                                // Hide Google as payment option.
+                            }
+                        } catch (ApiException exception) {
+                        }
+                    }
+                });
+    }
+
+    private PaymentDataRequest createPaymentDataRequest() {
+        PaymentDataRequest.Builder request =
+                PaymentDataRequest.newBuilder()
+                        .setTransactionInfo(
+                                TransactionInfo.newBuilder()
+                                        .setTotalPriceStatus(WalletConstants.TOTAL_PRICE_STATUS_FINAL)
+                                        .setTotalPrice("10.00")
+                                        .setCurrencyCode("USD")
+                                        .build())
+                        .addAllowedPaymentMethod(WalletConstants.PAYMENT_METHOD_CARD)
+                        .addAllowedPaymentMethod(WalletConstants.PAYMENT_METHOD_TOKENIZED_CARD)
+                        .setCardRequirements(
+                                CardRequirements.newBuilder()
+                                        .addAllowedCardNetworks(
+                                                Arrays.asList(
+                                                        WalletConstants.CARD_NETWORK_AMEX,
+                                                        WalletConstants.CARD_NETWORK_DISCOVER,
+                                                        WalletConstants.CARD_NETWORK_VISA,
+                                                        WalletConstants.CARD_NETWORK_MASTERCARD))
+                                        .build());
+
+        PaymentMethodTokenizationParameters params =
+                PaymentMethodTokenizationParameters.newBuilder()
+                        .setPaymentMethodTokenizationType(
+                                WalletConstants.PAYMENT_METHOD_TOKENIZATION_TYPE_PAYMENT_GATEWAY)
+                        .addParameter("gateway", "vantiv")
+                        //.addParameter("gatewayMerchantId", "yourMerchantIdGivenFromYourGateway")
+                        .addParameter("vantiv:merchantPayPageId", getString(R.string.vantiv_paypageid))
+                        .addParameter("vantiv:merchantOrderId", "orderId")
+                        .addParameter("vantiv:merchantTransactionId", "tranId")
+                        .addParameter("vantiv:merchantReportGroup", "reportGroup")
+                        .build();
+
+        request.setPaymentMethodTokenizationParameters(params);
+        return request.build();
     }
 
     // [START on_activity_result]
@@ -163,6 +258,24 @@ public class CheckoutActivity extends BikestoreFragmentActivity implements
                 break;
             case WalletConstants.RESULT_ERROR:
                 handleError(errorCode);
+                break;
+            case LOAD_PAYMENT_DATA_REQUEST_CODE:
+                switch (resultCode) {
+                    case Activity.RESULT_OK:
+                        PaymentData paymentData = PaymentData.getFromIntent(data);
+                        String token = paymentData.getPaymentMethodToken().getToken();
+                          break;
+                    case Activity.RESULT_CANCELED:
+                        break;
+                    case AutoResolveHelper.RESULT_ERROR:
+                        Status status = AutoResolveHelper.getStatusFromIntent(data);
+                        // Log the status for debugging.
+                        // Generally, there is no need to show an error to
+                        // the user as the Google Payment API will do that.
+                        break;
+                    default:
+                        // Do nothing.
+                }
                 break;
             default:
                 super.onActivityResult(requestCode, resultCode, data);
@@ -200,6 +313,17 @@ public class CheckoutActivity extends BikestoreFragmentActivity implements
             goToItemListActivity();
         } else if (v == mContinueCheckout) {
             continueCheckout();
+        }
+        else if (v == findViewById(R.id.button_pay_with_google)){
+            PaymentDataRequest request = createPaymentDataRequest();
+            if (request != null) {
+                AutoResolveHelper.resolveTask(
+                        mPaymentsClient.loadPaymentData(request),
+                        this,
+                        // LOAD_PAYMENT_DATA_REQUEST_CODE is a constant value
+                        // you define.
+                        LOAD_PAYMENT_DATA_REQUEST_CODE);
+            }
         }
     }
 
